@@ -4,21 +4,21 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
-class uploadPdf extends StatefulWidget {
-  const uploadPdf({super.key});
+class uploadVideo extends StatefulWidget {
+  const uploadVideo({super.key});
 
   @override
-  State<uploadPdf> createState() => _uploadPdfState();
+  State<uploadVideo> createState() => _uploadVideoState();
 }
 
-class _uploadPdfState extends State<uploadPdf> {
+class _uploadVideoState extends State<uploadVideo> {
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   List<Map<String,dynamic>> pdfData = []; //is list me sari pdf store hogi
 
   Future<String>uploadpdf(String fileName, File file) async {
-    final reference=  FirebaseStorage.instance.ref().child("image/$fileName.jpg");
+    final reference=  FirebaseStorage.instance.ref().child("video/$fileName.mp4");
     final uploadTask =reference.putFile(file);
     await uploadTask.whenComplete(() => {});
 
@@ -30,7 +30,7 @@ class _uploadPdfState extends State<uploadPdf> {
 
     final pickedFile = await  FilePicker.platform.pickFiles(
       type:FileType.custom,
-      allowedExtensions: ['jpg'],
+      allowedExtensions: ['mp4'],
     );
 
     if(pickedFile !=null)
@@ -39,7 +39,7 @@ class _uploadPdfState extends State<uploadPdf> {
       File file = File(pickedFile.files[0].path!);
       final downloadLink = await uploadpdf(fileName, file);
 
-      await  _firebaseFirestore.collection("image").add({
+      await  _firebaseFirestore.collection("video").add({
         "name": fileName,
         "url": downloadLink,
       });
@@ -47,14 +47,14 @@ class _uploadPdfState extends State<uploadPdf> {
     }
   }
   void getAllPdf() async{
-  final results = await _firebaseFirestore.collection("image").get();//is collection me jitna bhi data hoga vo sara get ho jayega
+    final results = await _firebaseFirestore.collection("video").get();//is collection me jitna bhi data hoga vo sara get ho jayega
 
-  pdfData= results.docs.map((e) => e.data()).toList();//e ke andar element ko return karega
+    pdfData= results.docs.map((e) => e.data()).toList();//e ke andar element ko return karega
 //e.data map me convert karta hai .....toList list me convert karta hai
-  setState(() {});
+    setState(() {});
   }
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -67,7 +67,7 @@ class _uploadPdfState extends State<uploadPdf> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar (
-        title: Text("images"),
+        title: Text("videos"),
       ), // AppBar
       body: GridView.builder(
         itemCount: pdfData.length,

@@ -18,10 +18,9 @@ class _uploadPdfState extends State<uploadPdf> {
   List<Map<String,dynamic>> pdfData = []; //is list me sari pdf store hogi
 
   Future<String>uploadpdf(String fileName, File file) async {
-    final reference=  FirebaseStorage.instance.ref().child("image/$fileName.jpg");
+    final reference=  FirebaseStorage.instance.ref().child("pdfs/$fileName.pdf");
     final uploadTask =reference.putFile(file);
     await uploadTask.whenComplete(() => {});
-
     final downloadLink = await reference.getDownloadURL();
     return downloadLink;
   }
@@ -30,7 +29,7 @@ class _uploadPdfState extends State<uploadPdf> {
 
     final pickedFile = await  FilePicker.platform.pickFiles(
       type:FileType.custom,
-      allowedExtensions: ['jpg'],
+      allowedExtensions: ['pdf'],
     );
 
     if(pickedFile !=null)
@@ -39,22 +38,22 @@ class _uploadPdfState extends State<uploadPdf> {
       File file = File(pickedFile.files[0].path!);
       final downloadLink = await uploadpdf(fileName, file);
 
-      await  _firebaseFirestore.collection("image").add({
+      await  _firebaseFirestore.collection("pdfs").add({
         "name": fileName,
         "url": downloadLink,
       });
-      print("image uploaded Succesfully");
+      print("Pdf uploaded Succesfully");
     }
   }
   void getAllPdf() async{
-  final results = await _firebaseFirestore.collection("image").get();//is collection me jitna bhi data hoga vo sara get ho jayega
+    final results = await _firebaseFirestore.collection("pdfs").get();//is collection me jitna bhi data hoga vo sara get ho jayega
 
-  pdfData= results.docs.map((e) => e.data()).toList();//e ke andar element ko return karega
+    pdfData= results.docs.map((e) => e.data()).toList();//e ke andar element ko return karega
 //e.data map me convert karta hai .....toList list me convert karta hai
-  setState(() {});
+    setState(() {});
   }
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -67,7 +66,7 @@ class _uploadPdfState extends State<uploadPdf> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar (
-        title: Text("images"),
+        title: Text("Pdfs"),
       ), // AppBar
       body: GridView.builder(
         itemCount: pdfData.length,
@@ -128,11 +127,8 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   PDFDocument? document;
 
   void initialisePdf() async{
-    print(widget.pdfUrl);
     document = await PDFDocument.fromURL(widget.pdfUrl);
-    setState(() {
-
-    });
+    setState(() {});
   }
   @override
   void initState() {
@@ -142,7 +138,9 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   }
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Image.network(widget.pdfUrl),
+      body:document != null? PDFViewer(
+        document: document!,
+      ): Center(child:CircularProgressIndicator(),),
     );
   }
 }

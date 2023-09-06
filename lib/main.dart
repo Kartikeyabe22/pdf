@@ -4,6 +4,7 @@ import 'package:hope/pages/auth_page.dart';
 import 'package:hope/pages/login_page.dart';
 import 'package:hope/pages/sign_up_page.dart';
 import 'package:hope/upload/pdfUpload.dart';
+import 'package:hope/upload/video_upload.dart';
 
 import 'firebase_options.dart';
 void main()async{
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(),
-      home:uploadPdf(),
+      home:uploadVideo(),
       //const AuthPage(),
     );
   }
